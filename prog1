@@ -1,4 +1,4 @@
-
+/* prog1 */
 read a
 read b
 area := a * b

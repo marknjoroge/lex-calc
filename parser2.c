@@ -9,7 +9,8 @@
 extern char token_image[];
 
 char* names[] = {"read", "write", "id", "literal", "becomes",
-                "add", "sub", "mul", "quo", "lparen", "rparen", "eof"};
+                "add", "sub", "mul", "quo", "lparen", "rparen", 
+                "eof", "comment", "newline"};
 
 static token input_token;
 
@@ -44,7 +45,7 @@ void add_op();
 void mult_op();
 
 void program() {
-   // printf("predict program\n");
+   printf("predict program\n");
     switch (input_token) {
         case id:
         case read:
@@ -53,12 +54,15 @@ void program() {
             stmt_list();
             match(eof);
             break;
-        default: error();
+        default: 
+            input_token = scan(input_file);
+            printf(names[input_token]);
+            error();
     }
 }
 
 void stmt_list() {
-    //printf("predict stmt_list\n");
+    printf("predict stmt_list\n");
     switch (input_token) {
         case id:
         case read:
@@ -73,7 +77,7 @@ void stmt_list() {
 }
 
 void stmt() {
-    //printf("predict stmt\n");
+    printf("predict stmt\n");
     switch (input_token) {
         case id:
             match(id);
@@ -93,7 +97,7 @@ void stmt() {
 }
 
 void expr() {
-    //printf("predict expr\n");
+    printf("predict expr\n");
     switch (input_token) {
         case id:
         case literal:
@@ -106,7 +110,7 @@ void expr() {
 }
 
 void term_tail() {
-    //printf("predict term_tail\n");
+    printf("predict term_tail\n");
     switch (input_token) {
         case add:
         case sub:
@@ -125,7 +129,7 @@ void term_tail() {
 }
 
 void term() {
-  //  printf("predict term\n");
+   printf("predict term\n");
     switch (input_token) {
         case id:
         case literal:
@@ -138,7 +142,7 @@ void term() {
 }
 
 void factor_tail() {
-//    printf("predict factor_tail\n");
+   printf("predict factor_tail\n");
     switch (input_token) {
         case mul:
         case quo:
@@ -159,7 +163,7 @@ void factor_tail() {
 }
 
 void factor() {
-//    printf("predict factor\n");
+   printf("predict factor\n");
     switch (input_token) {
         case id :
             match(id);
@@ -177,7 +181,7 @@ void factor() {
 }
 
 void add_op() {
-//    printf("predict add_op\n");
+   printf("predict add_op\n");
     switch (input_token) {
         case add:
             match(add);
@@ -190,7 +194,7 @@ void add_op() {
 }
 
 void mult_op() {
-//    printf("predict mult_op\n");
+   printf("predict mult_op\n");
     switch (input_token) {
         case mul:
             match(mul);

@@ -13,11 +13,50 @@ token scan(FILE *fp) {
     int i = 0;              /* index into token_image */
 
     /* skip white space */
-    while (isspace(c)) {
+    while (c == ' ' || c == '\t' || c == '\v' || c == '\f' || c == '\r') {
         c = getc(fp);
     }
     if (c == EOF)
         return eof;
+    if (c == '/') {
+            c = getc(fp);
+
+            //  1st case: Check if multiline comment
+            if(c == '*') {
+                c = getc(fp);
+                while (c != EOF) {
+                    if (c == '*') {
+                        if (getc(fp) == '/') {
+                            c = getc(fp);
+                            break;
+                        }
+                        else {
+                            ungetc(c, stdin);
+                        }
+                    }
+                    c = getc(fp);
+                    printf("\n\t%c,",c);
+                }
+                if (c == EOF) {
+                    fprintf(stderr, "error: unexpected end of file inside comment\n");
+                    exit(1);
+                }
+                printf("%c,",c);
+                return comment;
+            } 
+
+            // 2nd case: Check if singleline comment
+            else if (c == '/') {   
+                c = getc(fp);
+                while (c != '\n') {
+                    c = getc(fp);
+                }
+                return comment;
+            } 
+    }
+    while (c == '\n') {
+        c = getc(fp);
+    }
     if (isalpha(c)) {
         do {
             token_image[i++] = c;
