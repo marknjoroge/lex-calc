@@ -18,41 +18,43 @@ token scan(FILE *fp) {
     }
     if (c == EOF)
         return eof;
+
     if (c == '/') {
+        c = getc(fp);
+
+        //  1st case: Check if multiline comment
+        if(c == '*') {
+            c = getc(fp);
+            while (c != EOF) {
+                if (c == '*') {
+                    c = getc(fp);
+                    if (c == '/') {
+                        break;
+                    }
+                }
+                c = getc(fp);
+                printf("\n\t%c,",c);
+            }
+            if (c == EOF) {
+                fprintf(stderr, "error: unexpected end of file inside comment\n");
+                exit(1);
+            }
+
+            c = getc(fp);
             c = getc(fp);
 
-            //  1st case: Check if multiline comment
-            if(c == '*') {
-                c = getc(fp);
-                while (c != EOF) {
-                    if (c == '*') {
-                        if (getc(fp) == '/') {
-                            c = getc(fp);
-                            break;
-                        }
-                        else {
-                            ungetc(c, stdin);
-                        }
-                    }
-                    c = getc(fp);
-                    printf("\n\t%c,",c);
-                }
-                if (c == EOF) {
-                    fprintf(stderr, "error: unexpected end of file inside comment\n");
-                    exit(1);
-                }
-                printf("%c,",c);
-                return comment;
-            } 
+            printf("%c,",c);
+            // return comment;
+        } 
 
-            // 2nd case: Check if singleline comment
-            else if (c == '/') {   
+        // 2nd case: Check if singleline comment
+        else if (c == '/') {   
+            c = getc(fp);
+            while (c != '\n') {
                 c = getc(fp);
-                while (c != '\n') {
-                    c = getc(fp);
-                }
-                return comment;
-            } 
+            }
+            return comment;
+        } 
     }
     while (c == '\n') {
         c = getc(fp);
