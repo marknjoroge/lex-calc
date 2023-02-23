@@ -6,25 +6,61 @@
 #include "scanner.h"
 
 char token_image[100];
+
 int line_no = 0;
 
 token scan(FILE *fp) {
-    printf("\nscanning");
-    char c = getc(fp);
+    static int c = ' ';
         /* next available char; extra (int) width accommodates EOF */
     int i = 0;              /* index into token_image */
 
     /* skip white space */
-    while (isspace(c)) {
-        if (c == '\n') {
-            line_no++;
-            printf("\nnewline %d",line_no);
-            return newline;
-        }
+    while (c == ' ' || c == '\t' || c == '\v' || c == '\f' || c == '\r') {
         c = getc(fp);
     }
     if (c == EOF)
         return eof;
+
+    if (c == '/') {
+        c = getc(fp);
+
+        //  1st case: Check if multiline comment
+        if(c == '*') {
+            c = getc(fp);
+            while (c != EOF) {
+                if (c == '*') {
+                    c = getc(fp);
+                    if (c == '/') {
+                        break;
+                    }
+                }
+                c = getc(fp);
+            }
+            if (c == EOF) {
+                fprintf(stderr, "error: unexpected end of file inside comment\n");
+                exit(1);
+            }
+
+            c = getc(fp);
+            c = getc(fp);
+        } 
+
+        // 2nd case: Check if singleline comment
+        else if (c == '/') {   
+            c = getc(fp);
+            while (c != '\n') {
+                c = getc(fp);
+            }
+            line_no++;
+            printf("\nline %d: \n", line_no);
+            // return comment;
+        } 
+    }
+    while (c == '\n') {
+        c = getc(fp);
+        line_no++;
+        printf("\nline %d: \n", line_no);
+    }
     if (isalpha(c)) {
         do {
             token_image[i++] = c;
@@ -55,54 +91,9 @@ token scan(FILE *fp) {
         case '+': c = getc(fp); return add;
         case '-': c = getc(fp); return sub;
         case '*': c = getc(fp); return mul;
+        case '/': c = getc(fp); return quo;
         case '(': c = getc(fp); return lparen;
         case ')': c = getc(fp); return rparen;
-
-
-
-
-        case '/': 
-            c = getc(fp);
-
-            //  1st case: Check if multiline comment
-            if(c == '*') {
-            printf("\n%c\n",c);
-                c = getc(fp);
-                while (c != EOF) {
-                    if (c == '*') {
-                        if (getc(fp) == '/') {
-                            printf("comment0");
-                            break;
-                        }
-                        else {
-                            ungetc(c, stdin);
-                        }
-                    }
-                    c = getc(fp);
-                }
-                printf("comment1");
-                if (c == EOF) {
-                    fprintf(stderr, "error: unexpected end of file inside comment\n");
-                    exit(1);
-                }
-                return comment;
-            } 
-
-
-            // 2nd case: Check if singleline comment
-            else if (c == '/') {   
-                c = getc(fp);
-                while (c != '\n') {
-                    c = getc(fp);
-                }
-                return comment;
-            } 
-
-
-            // 3rd case: mark it as a division sign
-            else {
-                return quo;
-            }
         default:
             printf("lexical error\n");
             exit(1);

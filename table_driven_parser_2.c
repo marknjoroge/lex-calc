@@ -1,6 +1,5 @@
-/* Complete recursive descent parser for the calculator language.
-    Builds on figure 2.17. 
-*/
+// convert the parser to a table driven parser
+
 #include <stdio.h>
 #include <stdlib.h>
 #include "scanner.h"
@@ -28,7 +27,7 @@ void match(token expected) {
 //            printf(": %s", token_image);
 //        printf("\n");
         input_token = scan(input_file);
-    	printf ("the token is %s \n", names[input_token]);
+        printf ("the token is %s \n", names[input_token]);
     }
     else error();
 }
@@ -210,7 +209,6 @@ int main(int argc, char *argv[]) {
 
     input_file = fopen(argv[1], "r");
 
-    printf("hi");
     input_token = scan(input_file);
     printf ("the token is %s \n", names[input_token]);
     program();

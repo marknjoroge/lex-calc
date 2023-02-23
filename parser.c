@@ -4,6 +4,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "scanner.h"
+#include "parser.h"
+
 
 extern char token_image[];
 
@@ -13,12 +15,12 @@ char* names[] = {"read", "write", "id", "literal", "becomes",
 
 static token input_token;
 
+FILE *input_file;
+
 void error() {
     printf("syntax error\n");
     exit(1);
 }
-
-FILE *input_file;
 
 void match(token expected) {
     if (input_token == expected) {
@@ -27,12 +29,9 @@ void match(token expected) {
 //            printf(": %s", token_image);
 //        printf("\n");
         input_token = scan(input_file);
-    	printf ("the token is %s \n", names[input_token]);
+        printf ("the token is %s \n", names[input_token]);
     }
-    else {
-        printf("\nGot %s, expected %s.", names[input_token], names[expected]);
-        error();
-    }
+    else error();
 }
 
 void program();
@@ -47,13 +46,8 @@ void add_op();
 void mult_op();
 
 void program() {
-   printf("predict program\n");
+   // printf("predict program\n");
     switch (input_token) {
-        case comment:
-        case newline:
-            input_token = scan(input_file);
-            
-            program();
         case id:
         case read:
         case write:
@@ -61,12 +55,15 @@ void program() {
             stmt_list();
             match(eof);
             break;
-        default: error();
+        default: 
+            input_token = scan(input_file);
+            printf(names[input_token]);
+            error();
     }
 }
 
 void stmt_list() {
-    printf("predict stmt_list\n");
+    // printf("predict stmt_list\n");
     switch (input_token) {
         case id:
         case read:
@@ -81,7 +78,7 @@ void stmt_list() {
 }
 
 void stmt() {
-    printf("predict stmt\n");
+    // printf("predict stmt\n");
     switch (input_token) {
         case id:
             match(id);
@@ -101,7 +98,7 @@ void stmt() {
 }
 
 void expr() {
-    printf("predict expr\n");
+    // printf("predict expr\n");
     switch (input_token) {
         case id:
         case literal:
@@ -114,7 +111,7 @@ void expr() {
 }
 
 void term_tail() {
-    printf("predict term_tail\n");
+    // printf("predict term_tail\n");
     switch (input_token) {
         case add:
         case sub:
@@ -133,7 +130,7 @@ void term_tail() {
 }
 
 void term() {
-   printf("predict term\n");
+   // printf("predict term\n");
     switch (input_token) {
         case id:
         case literal:
@@ -146,7 +143,7 @@ void term() {
 }
 
 void factor_tail() {
-   printf("predict factor_tail\n");
+   // printf("predict factor_tail\n");
     switch (input_token) {
         case mul:
         case quo:
@@ -167,7 +164,7 @@ void factor_tail() {
 }
 
 void factor() {
-   printf("predict factor\n");
+   // printf("predict factor\n");
     switch (input_token) {
         case id :
             match(id);
@@ -185,7 +182,7 @@ void factor() {
 }
 
 void add_op() {
-   printf("predict add_op\n");
+   // printf("predict add_op\n");
     switch (input_token) {
         case add:
             match(add);
@@ -198,7 +195,7 @@ void add_op() {
 }
 
 void mult_op() {
-   printf("predict mult_op\n");
+   // printf("predict mult_op\n");
     switch (input_token) {
         case mul:
             match(mul);
@@ -210,19 +207,17 @@ void mult_op() {
     }
 }
 
-void ignore() {
-    switch (input_token) {
-    case newline:
-    case comment:
-        break;
-    }
+int parse(FILE *input_file) {
+    input_token = scan(input_file);
+    printf ("the token is %s \n", names[input_token]);
+    program();
+    return 0;
 }
 
 int main(int argc, char *argv[]) {
 
     input_file = fopen(argv[1], "r");
 
-    printf("hi");
     input_token = scan(input_file);
     printf ("the token is %s \n", names[input_token]);
     program();
