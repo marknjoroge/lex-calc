@@ -7,7 +7,7 @@
 
 char token_image[100];
 
-int line_no = 0;
+int line_no = 1;
 
 token scan(FILE *fp) {
     static int c = ' ';

@@ -1,3 +1,2 @@
 
-int parse(FILE *inputFile);
-void program();
+void parse(FILE *inputFile);

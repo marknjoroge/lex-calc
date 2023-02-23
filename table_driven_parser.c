@@ -2,6 +2,7 @@
 #include <stdlib.h>
 
 #include "table_driven_parser.h"
+#include "parser.h"
 
 const char* production_rules[] = {
     "program -> stmt_list",
@@ -10,7 +11,7 @@ const char* production_rules[] = {
     "stmt -> id := expr",
     "stmt -> read id",
     "stmt -> write expr",
-    "expr -> expr addop term",
+    "expr -> expr addop term", 
     "expr -> term",
     "term -> term mulop factor",
     "term -> factor",
@@ -40,6 +41,18 @@ int parsing_table[12][12] = {
 };
 
 FILE *input_file;
+
+void parse(FILE *inputFile) {
+    #include <stdio.h>
+
+    printf("    | read | write |  id  | lit  | bec  |  +   |  -   |  *   |  /   |  (   |  )   |  $$  |\n");
+    printf("----|------|-------|------|------|------|------|------|------|------|------|------|------|\n");
+    for(int i=0; i<12; i++) {
+        printf("%-4s|", i==0 ? "prog" : (i==1 ? "stmt_list" : (i==2 ? "stmt" : (i==3 ? "expr" : (i==4 ? "term_tail" : (i==5 ? "term" : (i==6
+    
+    // print footer row
+    printf("+------+------+------+\n");
+}
 
 void parser(FILE *inputFile) {
     int stack[100];
@@ -73,5 +86,6 @@ int main(int argc, char *argv[]) {
 
     input_file = fopen(argv[1], "r");
 
-    parse(input_file);
+    // parse(input_file);
+    printf(argv[1]);
 }

@@ -34,6 +34,13 @@ void match(token expected) {
     else error();
 }
 
+void parse(FILE *input_file) {
+    input_token = scan(input_file);
+    printf ("the token is %s \n", names[input_token]);
+    program();
+    return 0;
+}
+
 void program();
 void stmt_list();
 void stmt();
@@ -205,13 +212,6 @@ void mult_op() {
             break;
         default: error();
     }
-}
-
-int parse(FILE *input_file) {
-    input_token = scan(input_file);
-    printf ("the token is %s \n", names[input_token]);
-    program();
-    return 0;
 }
 
 int main(int argc, char *argv[]) {
