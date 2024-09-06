@@ -15,6 +15,19 @@ perimeter := 2 * (a + b)
 write area
 write perimeter
 ```
+### Running
+
+Give execute permission to the script
+
+```sh
+chmod +x parser.sh
+```
+
+Then run
+
+```sh
+./parser.sh
+```
 
 ## 1. Scanner
 
